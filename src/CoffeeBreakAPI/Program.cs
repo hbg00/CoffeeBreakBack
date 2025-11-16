@@ -1,23 +1,29 @@
-using System.Text;
+using CoffeeBreakAPI.Data;
+using CoffeeBreakAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddEnvironmentVariables();
-var jwtSecret = builder.Configuration["JWT__Secret"] ?? "change_this_secret_to_something_long";
-var jwtIssuer = builder.Configuration["JWT__Issuer"] ?? "my-app";
-var jwtAudience = builder.Configuration["JWT__Audience"] ?? "my-app";
-var jwtExpiryMinutes = int.Parse(builder.Configuration["JWT__ExpiryMinutes"] ?? "15");
-var refreshTokenExpiryDays = int.Parse(builder.Configuration["REFRESH__ExpiryDays"] ?? "30");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServer")));
 
-var googleClientId = builder.Configuration["Google__ClientId"];
-var googleClientSecret = builder.Configuration["Google__ClientSecret"];
+builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
-builder.Services.AddControllers();
-builder.Services.AddHttpClient();
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 
-var key = Encoding.ASCII.GetBytes(jwtSecret);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -25,25 +31,44 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = true;
-    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtIssuer,
-        ValidAudience = jwtAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.Zero
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-app.UseRouting();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    await context.Database.EnsureDeletedAsync();
+    await context.Database.MigrateAsync();
+
+    await DbSeeder.SeedUsersAndRoles(app);
+}
+
+
+app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
