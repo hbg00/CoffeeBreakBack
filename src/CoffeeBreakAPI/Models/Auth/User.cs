@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace CoffeeBreakAPI.Models
+namespace CoffeeBreakAPI.Models.Auth
 {
     public class User : IdentityUser<Guid>
     {

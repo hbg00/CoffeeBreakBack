@@ -1,5 +1,5 @@
 ﻿using CoffeeBreakAPI.Constants;
-using CoffeeBreakAPI.Models;
+using CoffeeBreakAPI.Models.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,5 +1,4 @@
-﻿
-namespace CoffeeBreakAPI.Dtos
+﻿namespace CoffeeBreakAPI.Dtos.Auth
 {
     public class UserDto
     {
@@ -7,6 +6,5 @@ namespace CoffeeBreakAPI.Dtos
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
-
     }
 }

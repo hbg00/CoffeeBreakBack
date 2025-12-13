@@ -1,4 +1,4 @@
-﻿using CoffeeBreakAPI.Models;
+﻿using CoffeeBreakAPI.Models.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

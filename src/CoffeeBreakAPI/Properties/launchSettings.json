@@ -3,7 +3,7 @@
   "profiles": {
     "http": {
       "commandName": "Project",
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://0.0.0.0:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ConnectionStrings:SQLServer": "Data Source=DESKTOP-6K2OUOQ;Initial Catalog=CofeeBreakDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"

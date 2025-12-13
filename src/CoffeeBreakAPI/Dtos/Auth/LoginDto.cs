@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CoffeeBreakAPI.Dtos
+namespace CoffeeBreakAPI.Dtos.Auth
 {
     public class LoginDto
     {

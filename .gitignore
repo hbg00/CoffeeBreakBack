@@ -1,0 +1,98 @@
+####################################
+# .NET / Visual Studio
+####################################
+
+# Build results
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+####################################
+# Logs
+####################################
+*.log
+
+####################################
+# OS generated files
+####################################
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+####################################
+# ASP.NET Core
+####################################
+
+# App settings with secrets
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# If you want ONLY base config tracked
+# appsettings.*.json
+# !appsettings.json
+
+####################################
+# Entity Framework
+####################################
+# Uncomment if you DON'T want migrations in repo
+# **/Migrations/
+
+####################################
+# Publish output
+####################################
+publish/
+*.pubxml
+*.pubxml.user
+
+####################################
+# NuGet
+####################################
+*.nupkg
+*.snupkg
+.nuget/
+
+####################################
+# Certificates
+####################################
+*.pfx
+*.cer
+*.crt
+*.key
+
+####################################
+# Secrets / Environment
+####################################
+.env
+.env.*
+secrets.json
+
+####################################
+# Docker
+####################################
+docker-compose.override.yml
+
+####################################
+# Test results
+####################################
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+####################################
+# Temporary files
+####################################
+*.tmp
+*.temp
