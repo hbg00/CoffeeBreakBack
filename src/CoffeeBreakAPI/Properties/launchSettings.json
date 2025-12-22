@@ -1,22 +1,12 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
-  "CoffeBreakAPI": {
+  "profiles": {
     "http": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5013",
+      "applicationUrl": "http://0.0.0.0:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "CoffeBreakAPI": {
-      "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
-      "applicationUrl": "https://localhost:7218;http://localhost:5013",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings:SQLServer": "Data Source=DESKTOP-6K2OUOQ;Initial Catalog=CofeeBreakDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
       }
     }
   }

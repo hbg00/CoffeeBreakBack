@@ -1,23 +1,34 @@
 using System.Text;
+using CoffeeBreakAPI.Data;
+using CoffeeBreakAPI.Interfaces;
+using CoffeeBreakAPI.Models.Auth;
+using CoffeeBreakAPI.Repository;
+using CoffeeBreakAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddEnvironmentVariables();
-var jwtSecret = builder.Configuration["JWT__Secret"] ?? "change_this_secret_to_something_long";
-var jwtIssuer = builder.Configuration["JWT__Issuer"] ?? "my-app";
-var jwtAudience = builder.Configuration["JWT__Audience"] ?? "my-app";
-var jwtExpiryMinutes = int.Parse(builder.Configuration["JWT__ExpiryMinutes"] ?? "15");
-var refreshTokenExpiryDays = int.Parse(builder.Configuration["REFRESH__ExpiryDays"] ?? "30");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServer")));
 
-var googleClientId = builder.Configuration["Google__ClientId"];
-var googleClientSecret = builder.Configuration["Google__ClientSecret"];
+builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+})
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
 
-builder.Services.AddControllers();
-builder.Services.AddHttpClient();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
-var key = Encoding.ASCII.GetBytes(jwtSecret);
+var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -25,25 +36,54 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = true;
-    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtIssuer,
-        ValidAudience = jwtAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ClockSkew = TimeSpan.Zero
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
     };
+});
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
 
-app.UseRouting();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+await DbSeeder.SeedUsersAndRoles(app);
+
+await DbSeeder.SeedProducts(app);
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 
 app.Run();
