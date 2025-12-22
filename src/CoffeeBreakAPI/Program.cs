@@ -1,12 +1,13 @@
+using System.Text;
 using CoffeeBreakAPI.Data;
 using CoffeeBreakAPI.Interfaces;
 using CoffeeBreakAPI.Models.Auth;
+using CoffeeBreakAPI.Repository;
 using CoffeeBreakAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 
@@ -58,6 +60,17 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+await DbSeeder.SeedUsersAndRoles(app);
+
+await DbSeeder.SeedProducts(app);
 
 if (app.Environment.IsDevelopment())
 {

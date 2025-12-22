@@ -37,7 +37,7 @@ Desktop.ini
 # App settings with secrets
 appsettings.Development.json
 appsettings.Production.json
-appsettings.Staging.json
+appsettings.json
 
 # If you want ONLY base config tracked
 # appsettings.*.json

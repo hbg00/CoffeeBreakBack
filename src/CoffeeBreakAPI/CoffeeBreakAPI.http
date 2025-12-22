@@ -1,6 +1,18 @@
-POST  http://localhost:5000/api/auth/login
+@baseUrl = http://localhost:5000
+
+############################################
+### AUTH – LOGIN (ADMIN)
+############################################
+POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
+
 {
-    "email": "admin@gmail.com",
-    "password": "Test1234$"
+  "email": "admin@gmail.com",
+  "password": "Test1234$"
 }
+
+############################################
+### PRODUCTS – ALL
+############################################
+GET {{baseUrl}}/api/products
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNzJjOTAyNC01OWY5LTQwNDktMjVjOC0wOGRlMjUzMjI2MTciLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsIm5hbWUiOiJFbWEgTWlsZXIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc2NjQ0OTA4NiwiaXNzIjoiQ29mZmVlQnJlYWtBUEkiLCJhdWQiOiJDb2ZmZWVCcmVha1VzZXJzIn0.lEjD0k8yLP2UGejGycWhQSCOMoDUJGBNpSCui5aSIBS8Jfv7Ewcxh7LbNpsa2Qa2R5jNRLFOl0TBnOEAr-mW0
